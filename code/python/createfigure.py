@@ -1,6 +1,5 @@
 '''Create figures for results of classification_pairwise'''
 
-
 from __future__ import print_function
 
 import os
