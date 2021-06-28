@@ -39,7 +39,7 @@ def main():
     mean_image_file = './data/images/ilsvrc_2012_mean.npy' # ImageNet Large Scale Visual Recognition Challenge 2012
 
     # Results file
-    data_dir = './data'
+    data_dir = 'data'
     featuredir = os.path.join(data_dir, 'ImageFeatures_caffe/')
     outputfile = os.path.join(data_dir, 'ImageFeatures_caffe.h5')
 
