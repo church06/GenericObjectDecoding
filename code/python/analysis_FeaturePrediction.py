@@ -9,30 +9,23 @@ Analysis summary
 - Results format:    Pandas dataframe
 '''
 
-
 from __future__ import print_function
 
 import os
-import sys
 import pickle
 from itertools import product
 from time import time
 
+import bdpy
 import numpy as np
 import pandas as pd
-from scipy import stats
-
-from slir import SparseLinearRegression
-from sklearn.linear_model import LinearRegression  # For quick demo
-
-import bdpy
 from bdpy.bdata import concat_dataset
+from bdpy.distcomp import DistComp
 from bdpy.ml import add_bias
 from bdpy.preproc import select_top
 from bdpy.stats import corrcoef
 from bdpy.util import makedir_ifnot, get_refdata
-from bdpy.dataform import append_dataframe
-from bdpy.distcomp import DistComp
+from sklearn.linear_model import LinearRegression  # For quick demo
 
 import god_config as config
 
@@ -109,11 +102,11 @@ def main():
         print('Preparing data')
         dat = data_all[sbj]
 
-        x = dat.select(rois[roi])           # Brain data
-        datatype = dat.select('DataType')   # Data type
+        x = dat.select(rois[roi])  # Brain data
+        datatype = dat.select('DataType')  # Data type
         labels = dat.select('stimulus_id')  # Image labels in brain data
 
-        y = data_feature.select(feat)             # Image features
+        y = data_feature.select(feat)  # Image features
         y_label = data_feature.select('ImageID')  # Image labels
 
         # For quick demo, reduce the number of units from 1000 to 100
@@ -122,7 +115,7 @@ def main():
         y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
 
         # Get training and test dataset
-        i_train = (datatype == 1).flatten()    # Index for training
+        i_train = (datatype == 1).flatten()  # Index for training
         i_test_pt = (datatype == 2).flatten()  # Index for perception test
         i_test_im = (datatype == 3).flatten()  # Index for imagery test
         i_test = i_test_pt + i_test_im
@@ -136,8 +129,7 @@ def main():
         # Feature prediction
         pred_y, true_y = feature_prediction(x_train, y_train,
                                             x_test, y_test,
-                                            n_voxel=num_voxel[roi],
-                                            n_iter=n_iter)
+                                            n_voxel=num_voxel[roi])
 
         # Separate results for perception and imagery tests
         i_pt = i_test_pt[i_test]  # Index for perception test within test
@@ -161,28 +153,28 @@ def main():
         # Get category averaged features
         catlabels_pt = np.vstack([int(n) for n in test_label_pt])  # Category labels (perception test)
         catlabels_im = np.vstack([int(n) for n in test_label_im])  # Category labels (imagery test)
-        catlabels_set_pt = np.unique(catlabels_pt)                 # Category label set (perception test)
-        catlabels_set_im = np.unique(catlabels_im)                 # Category label set (imagery test)
+        catlabels_set_pt = np.unique(catlabels_pt)  # Category label set (perception test)
+        catlabels_set_im = np.unique(catlabels_im)  # Category label set (imagery test)
 
-        y_catlabels = data_feature.select('CatID')   # Category labels in image features
+        y_catlabels = data_feature.select('CatID')  # Category labels in image features
         ind_catave = (data_feature.select('FeatureType') == 3).flatten()
 
         y_catave_pt = get_refdata(y[ind_catave, :], y_catlabels[ind_catave, :], catlabels_set_pt)
         y_catave_im = get_refdata(y[ind_catave, :], y_catlabels[ind_catave, :], catlabels_set_im)
 
         # Prepare result dataframe
-        results = pd.DataFrame({'subject' : [sbj, sbj],
-                                'roi' : [roi, roi],
-                                'feature' : [feat, feat],
-                                'test_type' : ['perception', 'imagery'],
+        results = pd.DataFrame({'subject': [sbj, sbj],
+                                'roi': [roi, roi],
+                                'feature': [feat, feat],
+                                'test_type': ['perception', 'imagery'],
                                 'true_feature': [true_y_pt, true_y_im],
                                 'predicted_feature': [pred_y_pt, pred_y_im],
-                                'test_label' : [test_label_pt, test_label_im],
-                                'test_label_set' : [test_label_set_pt, test_label_set_im],
-                                'true_feature_averaged' : [true_y_pt_av, true_y_im_av],
-                                'predicted_feature_averaged' : [pred_y_pt_av, pred_y_im_av],
-                                'category_label_set' : [catlabels_set_pt, catlabels_set_im],
-                                'category_feature_averaged' : [y_catave_pt, y_catave_im]})
+                                'test_label': [test_label_pt, test_label_im],
+                                'test_label_set': [test_label_set_pt, test_label_set_im],
+                                'true_feature_averaged': [true_y_pt_av, true_y_im_av],
+                                'predicted_feature_averaged': [pred_y_pt_av, pred_y_im_av],
+                                'category_label_set': [catlabels_set_pt, catlabels_set_im],
+                                'category_feature_averaged': [y_catave_pt, y_catave_im]})
 
         # Save results
         makedir_ifnot(os.path.dirname(results_file))
@@ -196,8 +188,8 @@ def main():
 
 # Functions ############################################################
 
-def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200):
-    '''Run feature prediction
+def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500):
+    """Run feature prediction
 
     Parameters
     ----------
@@ -207,8 +199,6 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200
         Brain data and image features for test
     n_voxel : int
         The number of voxels
-    n_iter : int
-        The number of iterations
 
     Returns
     -------
@@ -216,7 +206,7 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200
         Predicted features
     ture_label : array_like [shape = (n_sample, n_unit)]
         True features in test data
-    '''
+    """
 
     n_unit = y_train.shape[1]
 
@@ -240,7 +230,7 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200
 
         # Get unit features
         y_train_unit = y_train[:, i]
-        y_test_unit =  y_test[:, i]
+        y_test_unit = y_test[:, i]
 
         # Normalize image features for training (y_train_unit)
         norm_mean_y = np.mean(y_train_unit, axis=0)
@@ -262,12 +252,12 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200
         # Setup regression
         # For quick demo, use linaer regression
         model = LinearRegression()
-        #model = SparseLinearRegression(n_iter=n_iter, prune_mode=1)
+        # model = SparseLinearRegression(n_iter=n_iter, prune_mode=1)
 
         # Training and test
         try:
             model.fit(x_train_unit, y_train_unit)  # Training
-            y_pred = model.predict(x_test_unit)    # Test
+            y_pred = model.predict(x_test_unit)  # Test
         except:
             # When SLiR failed, returns zero-filled array as predicted features
             y_pred = np.zeros(y_test_unit.shape)
@@ -288,7 +278,7 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500, n_iter=200
 
 
 def get_averaged_feature(pred_y, true_y, labels):
-    '''Return category-averaged features'''
+    """Return category-averaged features"""
 
     labels_set = np.unique(labels)
 
@@ -298,7 +288,7 @@ def get_averaged_feature(pred_y, true_y, labels):
     return pred_y_av, true_y_av, labels_set
 
 
-# Run as a scirpt ######################################################
+# Run as a script ######################################################
 
 if __name__ == '__main__':
     # To avoid any use of global variables,
