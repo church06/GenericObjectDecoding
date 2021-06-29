@@ -1,4 +1,4 @@
-'''Generic Object Decoding: Feature prediction
+"""Generic Object Decoding: Feature prediction
 
 Analysis summary
 ----------------
@@ -7,7 +7,7 @@ Analysis summary
 - Preprocessing:     Normalization and voxel selection
 - Data:              GenericDecoding_demo
 - Results format:    Pandas dataframe
-'''
+"""
 
 from __future__ import print_function
 
