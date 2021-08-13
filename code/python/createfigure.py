@@ -1,4 +1,4 @@
-'''Create figures for results of classification_pairwise'''
+"""Create figures for results of classification_pairwise"""
 
 from __future__ import print_function
 
@@ -40,17 +40,17 @@ def main():
     subplotpos_catim = [47, 41, 35, 29, 23, 17, 11, 5, 48, 42, 36, 30, 24]
 
     # Image
-    plotresults(fig, results, value_key='mean_profile_correlation_image',
+    plotresults(results, value_key='mean_profile_correlation_image',
                 roi_label=roi_label, subplot_index=subplotpos_image,
                 caption='image_seen; ', ylabel='Corr. coef.', ylim=[-0.2, 0.6], ytick=[-0.2, 0, 0.2, 0.4])
 
     # Category, seen
-    plotresults(fig, results, value_key='mean_profile_correlation_cat_percept',
+    plotresults(results, value_key='mean_profile_correlation_cat_percept',
                 roi_label=roi_label, subplot_index=subplotpos_catpt,
                 caption='category_seen; ', ylabel='Corr. coef.', ylim=[-0.2, 0.6], ytick=[-0.2, 0, 0.2, 0.4])
 
     # Category, imagined
-    plotresults(fig, results, value_key='mean_profile_correlation_cat_imagery',
+    plotresults(results, value_key='mean_profile_correlation_cat_imagery',
                 roi_label=roi_label, subplot_index=subplotpos_catim,
                 barcolor=[0.8, 0.8, 0.8],
                 caption='category_imagined; ', ylabel='Corr. coef.', ylim=[-0.2, 0.6], ytick=[-0.2, 0, 0.2, 0.4])
@@ -72,12 +72,12 @@ def main():
     subplotpos_imagery = [46, 40, 34, 28, 22, 16, 10, 4, 47, 41, 35, 29, 23]
 
     # Image
-    plotresults(fig, results, value_key='catident_correct_rate_percept',
+    plotresults(results, value_key='catident_correct_rate_percept',
                 roi_label=roi_label, subplot_index=subplotpos_percept,
                 caption='seen; ', ylabel='Accuracy', ylim=[0.4, 1.0], ytick=[0.4, 0.6, 0.8, 1.0], textpos=[0, 0.92])
 
     # Category, seen
-    plotresults(fig, results, value_key='catident_correct_rate_imagery',
+    plotresults(results, value_key='catident_correct_rate_imagery',
                 roi_label=roi_label, subplot_index=subplotpos_imagery,
                 barcolor=[0.8, 0.8, 0.8],
                 caption='imagined; ', ylabel='Accuracy', ylim=[0.4, 1.0], ytick=[0.4, 0.6, 0.8, 1.0], textpos=[0, 0.92])
@@ -95,12 +95,25 @@ def main():
 
 # Functions ############################################################
 
-def plotresults(fig, results, value_key='', roi_label=[], feature_label=[],
-                subplot_index=[], caption='', barcolor=[0.4, 0.4, 0.4],
-                ylabel='', ylim=[-1, 1], ytick=[], textpos=[0, -0.12]):
-    '''Draw results of feature prediction'''
+def plotresults(results, value_key='', roi_label=None, subplot_index=None, caption='', barcolor=None,
+                ylabel='', ylim=None, ytick=None, textpos=None):
+    """Draw results of feature prediction"""
 
     # Get mean and confidence interval ---------------------------------
+    if textpos is None:
+        textpos = [0, -0.12]
+    if ytick is None:
+        ytick = []
+    if ylim is None:
+        ylim = [-1, 1]
+    if barcolor is None:
+        barcolor = [0.4, 0.4, 0.4]
+    if roi_label is None:
+        roi_label = []
+    if subplot_index is None:
+        subplot_index = []
+
+    print(value_key)
     tb_mean = pd.pivot_table(results, index=['roi'], columns=['feature'],
                              values=[value_key], aggfunc=np.mean)
     tb_sem = pd.pivot_table(results, index=['roi'], columns=['feature'],
@@ -155,7 +168,7 @@ def plotresults(fig, results, value_key='', roi_label=[], feature_label=[],
     plt.subplots_adjust(wspace=0.4, hspace=0.2)
 
 
-# Run as a scirpt ######################################################
+# Run as a script ######################################################
 
 if __name__ == '__main__':
     # To avoid any use of global variables,

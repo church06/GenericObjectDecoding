@@ -2,14 +2,14 @@
 
 import os
 
-analysis_name = 'GenericObjectDecoding'
+analysis_name = 'analysis_FeaturePrediction.py-Subject1-FFA-cnn1'
 
 # Data settings
-subjects = {'Subject1': ['data/Subject1.h5'],
-            'Subject2': ['data/Subject2.h5'],
-            'Subject3': ['data/Subject3.h5'],
-            'Subject4': ['data/Subject4.h5'],
-            'Subject5': ['data/Subject5.h5']}
+subjects = {'Subject1': [os.path.abspath('data/Subject1.h5')],
+            'Subject2': [os.path.abspath('data/Subject2.h5')],
+            'Subject3': [os.path.abspath('data/Subject3.h5')],
+            'Subject4': [os.path.abspath('data/Subject4.h5')],
+            'Subject5': [os.path.abspath('data/Subject5.h5')]}
 
 rois = {'VC': 'ROI_VC = 1',
         'LVC': 'ROI_LVC = 1',
@@ -38,7 +38,7 @@ features = ['cnn1', 'cnn2', 'cnn3', 'cnn4', 'cnn5', 'cnn6', 'cnn7', 'cnn8', 'hma
 
 # Results settings
 results_dir = os.path.join('results', analysis_name)
-results_file = os.path.join('results', analysis_name + '.pkl')
+results_file = os.path.join('results\\GenericObjectDecoding\\Subject1', analysis_name + '.pkl')
 
 # Figure settings
 roi_labels = ['V1', 'V2', 'V3', 'V4', 'LOC', 'FFA', 'PPA', 'LVC', 'HVC', 'VC']

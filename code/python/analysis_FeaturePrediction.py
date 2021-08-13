@@ -25,7 +25,7 @@ from bdpy.ml import add_bias
 from bdpy.preproc import select_top
 from bdpy.stats import corrcoef
 from bdpy.util import makedir_ifnot, get_refdata
-from sklearn.linear_model import LinearRegression  # For quick demo
+from slir import SparseLinearRegression
 
 import god_config as config
 
@@ -57,6 +57,7 @@ def main():
     data_all = {}
     for sbj in subjects:
         if len(subjects[sbj]) == 1:
+
             data_all[sbj] = bdpy.BData(subjects[sbj][0])
         else:
             # Concatenate data
@@ -108,9 +109,6 @@ def main():
 
         y = data_feature.select(feat)  # Image features
         y_label = data_feature.select('ImageID')  # Image labels
-
-        # For quick demo, reduce the number of units from 1000 to 100
-        y = y[:, :100]
 
         y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
 
@@ -223,6 +221,8 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500):
     y_true_list = []
     y_pred_list = []
 
+    n_iter = 200
+
     for i in range(n_unit):
 
         print('Unit %03d' % (i + 1))
@@ -249,10 +249,15 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500):
         x_train_unit = add_bias(x_train_unit, axis=1)
         x_test_unit = add_bias(x_test_unit, axis=1)
 
+        print('x_train_unit:', x_train_unit.shape)
+        print('y_train_unit: ', y_train_unit.shape)
+        print('x_test_unit: ', x_test_unit.shape)
+        print('y_test_unit: ', y_test_unit.shape)
         # Setup regression
-        # For quick demo, use linaer regression
-        model = LinearRegression()
-        # model = SparseLinearRegression(n_iter=n_iter, prune_mode=1)
+        # For quick demo, use liner regression
+        # model = LinearRegression()
+
+        model = SparseLinearRegression(n_iter=n_iter, prune_mode=1)
 
         # Training and test
         try:
@@ -263,6 +268,11 @@ def feature_prediction(x_train, y_train, x_test, y_test, n_voxel=500):
             y_pred = np.zeros(y_test_unit.shape)
 
         # Denormalize predicted features
+
+        print('y_pred: ', y_pred.shape)
+        print('norm_scale_y: ', norm_scale_y.shape)
+        print('norm_mean_y: ', norm_mean_y.shape)
+
         y_pred = y_pred * norm_scale_y + norm_mean_y
 
         y_true_list.append(y_test_unit)
