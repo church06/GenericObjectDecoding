@@ -107,7 +107,7 @@ def get_pwident_correctrate(simmat):
     labels = range(num_pred)
 
     correct_rate = []
-    for i in xrange(num_pred):
+    for i in range(num_pred):
         pred_feat = simmat[i, :]
         correct_feat = pred_feat[labels[i]]
         pred_num = len(pred_feat) - 1
