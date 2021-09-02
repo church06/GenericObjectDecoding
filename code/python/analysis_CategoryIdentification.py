@@ -4,7 +4,6 @@ Object category identification
 This file is a part of GenericDecoding_demo.
 '''
 
-
 from __future__ import print_function
 
 import os
@@ -22,7 +21,6 @@ import god_config as config
 # Main #################################################################
 
 def main():
-    results_dir = config.results_dir
     output_file = config.results_file
 
     image_feature_file = config.image_feature_file
@@ -40,8 +38,7 @@ def main():
     feature_list = results['feature']
     pred_percept = results['predicted_feature_averaged_percept']
     pred_imagery = results['predicted_feature_averaged_imagery']
-    cat_label_percept = results['category_label_set_percept']
-    cat_label_imagery = results['category_label_set_imagery']
+
     cat_feature_percept = results['category_feature_averaged_percept']
     cat_feature_imagery = results['category_feature_averaged_imagery']
 
@@ -55,13 +52,20 @@ def main():
         feat_other = data_feature.select(f)[ind_cat_other, :]
 
         n_unit = fpt.shape[1]
+        print('fpt: ', fpt.shape)
+        print('n_unit: ', n_unit)
         feat_other = feat_other[:, :n_unit]
+        print('feat_other: ', feat_other.shape)
 
         feat_candidate_pt = np.vstack([fpt, feat_other])
         feat_candidate_im = np.vstack([fim, feat_other])
 
         simmat_pt = corrmat(pred_pt, feat_candidate_pt)
         simmat_im = corrmat(pred_im, feat_candidate_im)
+
+        print('cor matrix PT: ', simmat_pt.shape)
+        print('cor matrix IM: ', simmat_im.shape)
+        break
 
         cr_pt = get_pwident_correctrate(simmat_pt)
         cr_im = get_pwident_correctrate(simmat_im)

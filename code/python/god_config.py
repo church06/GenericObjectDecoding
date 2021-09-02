@@ -2,7 +2,7 @@
 
 import os
 
-analysis_name = 'analysis_FeaturePrediction.py-Subject1-FFA-cnn1'
+analysis_name = 'analysis_FeaturePrediction.py-Subject1-FFA-cnn1.pkl'
 
 # Data settings
 subjects = {'Subject1': [os.path.abspath('data/Subject1.h5')],
@@ -37,8 +37,8 @@ image_feature_file = 'data/ImageFeatures.h5'
 features = ['cnn1', 'cnn2', 'cnn3', 'cnn4', 'cnn5', 'cnn6', 'cnn7', 'cnn8', 'hmax1', 'hmax2', 'hmax3', 'gist', 'sift']
 
 # Results settings
-results_dir = os.path.join('results', analysis_name)
-results_file = os.path.join('results\\GenericObjectDecoding\\Subject1', analysis_name + '.pkl')
+results_dir = os.path.join('results\\GenericObjectDecoding\\Subject1', analysis_name)
+results_file = os.path.join('results\\s1_ffa_cnn1.pkl')
 
 # Figure settings
 roi_labels = ['V1', 'V2', 'V3', 'V4', 'LOC', 'FFA', 'PPA', 'LVC', 'HVC', 'VC']
